@@ -1,18 +1,14 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+     <NewsMain/>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
+import NewsMain from './components/NewsMain.vue'
 export default {
   name: 'App',
-  components: {
-    HelloWorld
-  }
+  components: { NewsMain }
 }
 </script>
 
@@ -25,4 +21,18 @@ export default {
   color: #2c3e50;
   margin-top: 60px;
 }
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 </style>
