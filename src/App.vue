@@ -5,9 +5,9 @@
 </template>
 
 <script>
-import NewsMain from './components/NewsMain.vue'
+import NewsMain from './pages/NewsMain.vue'
 export default {
-  name: 'App',
+    name: 'App',
   components: { NewsMain }
 }
 </script>
