@@ -32,10 +32,11 @@
 </template>
 
 <script>
-import axios from "axios";
-import { baseURL,api_KEY } from '../api';
+//import axios from "axios";
+//import { baseURL,api_KEY } from '../api';
 import NavBar from "../components/NavBar.vue";
 import NewsItem from '../components/NewsItem.vue';
+import DB from '../DB.json';
 export default {
     name: "NewsApp",
     components: { NewsItem, NavBar },
@@ -45,10 +46,8 @@ export default {
         };
     },
   methods: {
-   async fetchArticles(){
-       const response = await axios.get(`${baseURL}?q=all&${api_KEY}`, 
-         { headers: { 'Content-Type': 'multipart/form-data;' } } );
-        this.articles = response.data.articles;
+    fetchArticles(){
+        this.articles = DB.data;
         this.articles = this.articles.sort(
         (itemA,itemB) =>  Number(new Date(itemB.publishedAt)) - Number(new Date(itemA.publishedAt))
        )
