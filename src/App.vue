@@ -8,7 +8,7 @@
 import NewsMain from './pages/NewsMain.vue'
 export default {
     name: 'App',
-  components: { NewsMain }
+    components: { NewsMain }
 }
 </script>
 
@@ -34,5 +34,4 @@ export default {
     transform: rotate(360deg);
   }
 }
-
 </style>
