@@ -1,14 +1,14 @@
 <template>
   <div id="app">
-     <NewsMain/>
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
-import NewsMain from './pages/NewsMain.vue'
+//import NewsMain from './pages/NewsMain.vue'
 export default {
     name: 'App',
-    components: { NewsMain }
+    //components: { NewsMain }
 }
 </script>
 
@@ -34,4 +34,10 @@ export default {
     transform: rotate(360deg);
   }
 }
+html,body {
+  display: flex;
+  margin: 0; 
+  height: 100%;
+  width: 100%; 
+  }
 </style>

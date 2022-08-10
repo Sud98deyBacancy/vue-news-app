@@ -1,33 +1,37 @@
 <template>
-<div class="fluid mx-1">
+<div class="fluid mx-1" id="styleDiv">
   <div  class= "mx-4 input-group justify-content-around mt-2 position-absolute fixed-top bg-light">
     <NavBar :items="sources" @Select="selectCategory"></NavBar> 
     
     <div class= "w-50 pr-5 p-2">
-      <input style=" align-self: center;"
-             class="form-control nav-item" 
-             type="text" v-model="searchText" 
-             placeholder="Search news items..." aria-label="Search">
+      <input class="form-control nav-item searchBox" 
+             type="text" 
+             v-model="searchText" 
+             placeholder="Search news items..." 
+             aria-label="Search"/>
     </div>
   </div>
-  <h3 class="pt-3"> 
-    <span> {{ filteredArticles.length }} news reports found </span> 
+  <h3 class="pt-3 myH3"> 
+    <span> {{ filteredArticles.length }} news articles found </span> 
   </h3>
-  <div class="d-flex flex-row mt-4" >          
-    <div class="d-inline-flex flex-sm-wrap" id="app-news">
-      <NewsItem
+   <section class="card-group">
+        <div class="d-flex flex-rows mt-4" >  
+      <div class="d-inline-flex flex-columns flex-sm-wrap">
+      <NewsItem 
           v-for="(article,index) in filteredArticles" :key="index" 
           :title="article.title.slice(0,60)"
           :description="article.description.slice(0,85)"
           :imageURL = "article.urlToImage"
-          :newsURL = "article.url"
+          :newsURL = "article.url"   
           :source="article.source.name"
           :author=article.author
           :time="article.publishedAt" 
-          class="mx-3"   
-          style="width: 30%;" /> 
+          class="articles mx-3"   
+           /> 
     </div>
   </div>
+   </section>
+   
 </div>
 </template>
 
@@ -42,7 +46,7 @@ export default {
     components: { NewsItem, NavBar },
     data() {
       return {  
-        searchText:'',articles:[],sources:[] 
+        searchText:'',articles:[],sources:[],showArticles:[] 
         };
     },
   methods: {
@@ -68,7 +72,7 @@ export default {
   },
  computed: {
     filteredArticles(){
-      if(this.query && (this.query.searchText === '' || this.query.searchText === 'all')){
+      if(this.searchText === '' || this.searchText === 'all'){
         return this.articles
       } else{
         const result = this.articles.filter((article) => 
@@ -82,7 +86,10 @@ export default {
   mounted(){ this.fetchArticles();  }
 }
 </script>
-<!-- Add "scoped" attribute to limit CSS to this component only -->
+
 <style scoped>
-h3 { margin: 40px 0 0; }
+.myH3 { margin: 40px 0 0; }
+#styleDiv { display: inline-block; width:auto;}
+.searchBox {align-self: center; }
+.articles { width: 30%; }
 </style>

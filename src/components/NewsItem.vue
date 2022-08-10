@@ -1,10 +1,10 @@
 <template>
+<div class="card mb-3 shadow-lg p-0  
+           bg-white rounded" >
 <a :href=newsURL> 
-  <div class="card mb-4 shadow-lg p-3 mb-5 bg-white rounded">
-    <img :src="imageURL" 
-          class="card-img-top" 
-          alt="" 
-          style="width:17rem;"/>
+<img :src="imageURL" 
+          class="pt-3 card-img-top w-80" 
+          alt="" />
     
     <div class="card-body">
       <h5 class="card-title"> {{ title }}  
@@ -13,14 +13,15 @@
         </span>
       </h5>
       <p class="card-text">{{ description }}... </p>
-      <p class="card-text">
-        <small class='text-muted'> 
+    </div>
+    <div class="card-footer">
+        <small class='text-info'> 
           By {{ !author?"Unknown":author }} author on {{ new Date(time).toGMTString() }} 
         </small> 
-      </p>
-    </div>
-  </div>
-</a>
+      </div>
+  </a>
+</div>
+
 </template>
 <script>
 export default {
