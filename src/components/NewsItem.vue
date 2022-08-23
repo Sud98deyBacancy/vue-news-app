@@ -26,7 +26,15 @@
 <script>
 export default {
     name:'NewsItem',
-    props:['imageURL','newsURL','title','source','description','author','time']
+    props:{
+      imageURL:String,
+      newsURL: String,
+      title: { type: String, required: true},
+      source: { type: String, required:true},
+      description: { type:String, required: true},
+      author:String,
+      time: String 
+    }
 }
 </script>
 <style scoped>

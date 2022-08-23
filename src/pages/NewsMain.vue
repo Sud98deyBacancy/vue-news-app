@@ -1,16 +1,5 @@
 <template>
 <div class="fluid mx-1" id="styleDiv">
-  <div  class= "mx-4 input-group justify-content-around mt-2 position-absolute fixed-top bg-light">
-    <NavBar :items="sources" @Select="selectCategory"></NavBar> 
-    
-    <div class= "w-50 pr-5 p-2">
-      <input class="form-control nav-item searchBox" 
-             type="text" 
-             v-model="searchText" 
-             placeholder="Search news items..." 
-             aria-label="Search"/>
-    </div>
-  </div>
   <h3 class="pt-3 myH3"> 
     <span> {{ filteredArticles.length }} news articles found </span> 
   </h3>
@@ -19,8 +8,8 @@
       <div class="d-inline-flex flex-columns flex-sm-wrap">
       <NewsItem 
           v-for="(article,index) in filteredArticles" :key="index" 
-          :title="article.title.slice(0,60)"
-          :description="article.description.slice(0,85)"
+          :title="article.title | sliceText(60)"
+          :description="article.description | sliceText(84)"
           :imageURL = "article.urlToImage"
           :newsURL = "article.url"   
           :source="article.source.name"
@@ -36,22 +25,30 @@
 </template>
 
 <script>
-//import axios from "axios";
-//import { baseURL,api_KEY } from '../api';
-import NavBar from "../components/NavBar.vue";
+import axios from "axios";
+import { baseURL  } from '../api';
+import { eventBus } from "@/main.js";
 import NewsItem from '../components/NewsItem.vue';
-import DB from '../DB.json';
 export default {
     name: "NewsApp",
-    components: { NewsItem, NavBar },
+    components: { NewsItem },
     data() {
       return {  
         searchText:'',articles:[],sources:[],showArticles:[] 
         };
     },
+    filters:{
+     sliceText : function (value,len) {
+      return value.slice(0,len);
+     }
+    },
   methods: {
-    fetchArticles(){
-        this.articles = DB.data;
+    async fetchArticles(){
+        await axios.get(`${baseURL}/data.json`,{
+           headers: { 'Access-Control-Allow-Origin': '*' }
+        }).then((res) => { this.articles = res.data})
+          .catch((error) => console.log(error))
+        
         this.articles = this.articles.sort(
         (itemA,itemB) =>  Number(new Date(itemB.publishedAt)) - Number(new Date(itemA.publishedAt))
        )
@@ -59,15 +56,23 @@ export default {
            this.sources.push(article.source.name.split('.')[0])
         });
         this.fetchSources();
-    },
+      },
   fetchSources(){
        const uniqueVals = (value,indexOf,self) => {
           return self.indexOf(value) === indexOf;
         }
         this.sources = this.sources.filter(uniqueVals)
+        eventBus.$emit('addSources',this.sources);
+      },
+  selectCategory(){
+      eventBus.$on("Select",(data) => {
+        this.searchText = data;
+        });
     },
-  selectCategory(val){
-      this.searchText = val;
+    searchItems(){
+      eventBus.$on("search",(data) => {
+        this.searchText = data;
+        });
     },          
   },
  computed: {
@@ -83,13 +88,16 @@ export default {
       }
     },
   },
-  mounted(){ this.fetchArticles();  }
+  mounted(){ 
+    this.searchItems();
+    this.fetchArticles(); 
+    this.selectCategory(); 
+   }
 }
 </script>
 
 <style scoped>
 .myH3 { margin: 40px 0 0; }
-#styleDiv { display: inline-block; width:auto;}
-.searchBox {align-self: center; }
+#styleDiv { display: block; width:auto;}
 .articles { width: 30%; }
 </style>
