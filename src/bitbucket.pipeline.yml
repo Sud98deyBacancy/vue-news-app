@@ -1,0 +1,8 @@
+pipelines:
+  branches:
+    master:
+      - step:
+        name: Build the app
+        script:
+          - npm run build
+          - echo "Build successful"
