@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <nav-bar title="News Items"></nav-bar>
+    <nav-bar title="News Items Here"></nav-bar>
     <router-view></router-view>
   </div>
 </template>
