@@ -32,16 +32,40 @@
           </button>
        </div>
     </form>
+    <div class="row mb-2">
+         <span class="mx-3"> 
+            <facebook-login class="button"
+                   appId="1111668039451576"
+                   @login="fbLogin"
+                   @logout="fbLogout"
+                   @sdk-loaded="sdkLoaded">
+            </facebook-login>
+         </span>  
+       <!--   <GoogleLogin :params="params" 
+                      :onSuccess="onLoginSuccess" 
+                      :onFailure="onLoginFailure"> 
+                      Login With Google </GoogleLogin> -->
+             <div id="signin_button"> </div>         
+       </div>
+
     </div>
 </section>
 </template>
-<script >
+<script>
 import axios from "axios";
-import Cookies from 'js-cookie';
-import { firebaseConfig  } from '@/api';
+import Cookies from 'js-cookie';    
+import { firebaseConfig,googleID,fbID  } from '@/api';
+//import GoogleLogin from 'vue-google-login';
+import facebookLogin from 'facebook-login-vuejs';
+
 export default {
   data() {
-     return {  email:'',password:''  };
+     return {  
+               email:'',password:'',FB:undefined,
+               isFBConnected:false,
+               params: { client_id: googleID },
+               
+            };
    },
    methods:{
     setCookies(token,refreshToken){
@@ -62,6 +86,66 @@ export default {
             console.log(error)
        });
     },
+    onLoginSuccess(googleUser) {
+        console.log(googleUser);
+    },
+    onLoginFailure(error){
+      console.log(error);
+    },
+    getUserData() {
+       let token = this.FB.getAuthResponse();
+       this.FB.api(`/me`, 'GET', { fields: 'id,name,email' },
+        userInfo => { console.log(userInfo,fbID) }
+      )
+      this.loginWithFB(token.accessToken);
+    },
+    sdkLoaded(payload) {
+      this.isFBConnected = payload.isConnected
+      this.FB = payload.FB
+      if (this.isFBConnected)  this.getUserData()
+    },
+    fbLogin() {
+      this.isFBConnected = true
+      this.getUserData()
+    },
+    fbLogout() {
+      this.isFBConnected = false;
+
+    },
+    async loginWithGoogle(accessToken){
+       let userToken = Cookies.get('refreshToken');
+       if(userToken){
+          this.exchangeToken(userToken);
+       } else {
+                await axios.post(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithIdp?key=${firebaseConfig.apiKey}`,
+                      {
+                      returnSecureToken: true,  
+                      requestUri: 'http://localhost',
+                      postBody: `access_token=${accessToken}&providerId=google.com`,
+                      returnIdpCredential: true
+                        }).then((res)=>{
+                            console.log(res);
+                            this.setCookies(res.data.idToken, res.data.refreshToken);
+                            this.$router.push('/');
+                            }).catch((error)=>{ console.log(error) })
+              }   
+    },
+     async loginWithFB(token){
+       let userToken = Cookies.get('refreshToken');
+       if(userToken){
+          this.exchangeToken(userToken);
+       } else {
+                await axios.post(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithIdp?key=${firebaseConfig.apiKey}`,{
+                      requestUri: "http://localhost",
+                      postBody: `access_token=${token}&providerId=facebook.com`,
+                      returnSecureToken: true,  returnIdpCredential: true
+                        }).then((res)=>{
+                            console.log(res);
+                            this.setCookies(res.data.idToken, res.data.refreshToken);
+                            this.$router.push('/');
+                            }).catch((error)=>{ console.log(error) })
+              }   
+    },
      async login(){
        let userToken = Cookies.get('refreshToken');
        if(userToken){
@@ -77,9 +161,35 @@ export default {
                 console.log(error)
             });
        }
-            
-    },
-   }
+      },
+      handleCredentials(response){
+        console.log(response.credential);
+        if(response) {
+          this.loginWithGoogle(response.credential);
+        }
+      }
+   },
+    components:{ facebookLogin },
+    mounted:function() {
+      const google = window.google;
+      google.accounts.id.initialize({
+      client_id: googleID,
+      cancel_on_tap_outside: false,
+      callback: this.handleCredentials,
+    });
+     google.accounts.id.renderButton(
+      document.getElementById("signin_button"),
+      { theme: "outline", size: "large",text:"continue_with" } // customization attributes
+    );
+    (function loadFBsdk(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = "https://connect.facebook.net/en_US/sdk.js";
+      fjs.parentNode.insertBefore(js, fjs);
+      console.log("loaded")
+    }) (document, 'script', 'facebook-jssdk');
+   },
 }
 </script>
 <style scoped>

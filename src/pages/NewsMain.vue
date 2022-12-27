@@ -54,8 +54,21 @@ export default {
        )
        this.articles.forEach( article => {
            this.sources.push(article.source.name.split('.')[0])
+           this.isImgURl(article.urlToImage).then(res => {
+            if(!res){
+              article.urlToImage = ''
+            }
+           })
         });
         this.fetchSources();
+      },
+      isImgURl(url){
+        const img = new Image()
+        img.src = url
+        return new Promise((resolve) => {
+          img.onerror = () => resolve(false);
+          img.onload = () => resolve(true);
+        });
       },
   fetchSources(){
        const uniqueVals = (value,indexOf,self) => {
@@ -91,8 +104,8 @@ export default {
   mounted(){ 
     this.searchItems();
     this.fetchArticles(); 
-    this.selectCategory(); 
-   }
+    this.selectCategory();
+    }
 }
 </script>
 

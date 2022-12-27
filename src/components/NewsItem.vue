@@ -1,16 +1,22 @@
 <template>
 <div class="card mb-3 shadow-lg p-0  
            bg-white rounded" >
-<a :href=newsURL> 
-<img :src="imageURL" 
-          class="pt-3 card-img-top w-80" 
+<a :href=newsURL>
+  <img  v-if="(imageURL.length)"
+        :src="imageURL"
+         class="pt-3 card-img-top w-80 h-50" 
+          alt="" />
+   
+  <img v-else
+          src="../assets/default.png" 
+          class="pt-3 card-img-top w-60 h-50" 
           alt="" />
     
     <div class="card-body">
       <h5 class="card-title"> {{ title }}  
         <span class="position-relative absolute-top top-0 start-90
-                translate-middle badge rounded-pill bg-danger"> {{ source.split('.')[0] }}
-        </span>
+                translate-middle badge rounded-pill bg-danger"> {{ source.split(".")[0] }}
+        </span> 
       </h5>
       <p class="card-text">{{ description }}... </p>
     </div>
@@ -34,7 +40,7 @@ export default {
       description: { type:String, required: true},
       author:String,
       time: String 
-    }
+    },
 }
 </script>
 <style scoped>
